@@ -34,9 +34,10 @@ dat_list <- readRDS(file = glue("data/dat_list_{TENSOR}_n.RDS"))
 ############
 # analysis #
 ############
-## varying alpha, lambda
+# varying alpha, lambda
 
-alpha_seq <- c(0, 0.1, 0.5, 1)
+alpha_seq <- c(0, 0.01, 0.1, 0.15, 0.5, 1)
+lambda_grid <- c(1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.01)
 res <- list()
 
 for (j in keep_network) {
@@ -49,17 +50,23 @@ for (j in keep_network) {
       en_superagers_network(
         dat = dat_list[[j]],
         caret = FALSE,
-        lambda_grid = c(1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.01),
+        lambda_grid = lambda_grid,
         alpha = alpha_seq[i])
   }
 
   res[[j]]$lambda <- purrr::map(res[[j]]$alpha, ~.$lambda.1se)
   res[[j]]$coef_vals <- purrr::map(res[[j]]$alpha, coef, s = "lambda.1se")
-  res[[j]]$coef_num <- map(res[[j]]$coef_vals, ~sum(.[, "1"] != 0))
+
+  # number of non-zero coefficients
+  res[[j]]$coef_num <- map(res[[j]]$coef_vals, ~sum(.[, "s1"] != 0))
 }
 
 
-# table
+##########
+# tables #
+##########
+
+# number of coefficients per alpha
 
 alpha_tab <- NULL
 

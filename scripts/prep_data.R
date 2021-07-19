@@ -77,6 +77,8 @@ regions <-
   readr::read_csv(here::here("../../raw_data/position.csv")) %>%
   select(-x, -y, -z)
 
+save(regions, file = "data/regions.RData")
+
 # subset networks
 keep_network <- c("DMN", "Salience", "ECN_L", "ECN_R", "Hippocampal", "Language")
 n_networks <- length(keep_network)

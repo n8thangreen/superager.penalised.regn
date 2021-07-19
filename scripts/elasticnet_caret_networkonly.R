@@ -33,6 +33,9 @@ dat_list <- readRDS(file = glue("data/dat_list_{TENSOR}_n.RDS"))
 # analysis #
 ############
 
+load("data/regions.RData")
+keep_network <- c("DMN", "Salience", "ECN_L", "ECN_R", "Hippocampal", "Language")
+
 # fit model
 res <-
   purrr::map(dat_list, ~en_superagers_network(.x))
