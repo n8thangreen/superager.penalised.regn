@@ -41,7 +41,7 @@ for (i in seq_len(num_networks)) {
               res_3T[[i]])
 
   stat_res[["3T"]][[i]] <-
-    fit_stats_filter(dat_list_3T[[i]],
+    fit_stats(dat_list_3T[[i]],
               res_3T[[i]])
 
   stat_res[["7T"]][[i]] <-
@@ -143,7 +143,7 @@ dev.off()
 
 
 ###################################
-# single plot for 3T and 7T
+# overlay plot for 3T and 7T
 
 # png("output/rgn_scatterplot_3T_7T.png")
 # tiff("output/rgn_scatterplot_3T_7T.tiff", res=300,  width = 8, height = 8, units = 'in')

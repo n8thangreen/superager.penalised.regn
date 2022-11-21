@@ -34,8 +34,6 @@ fit_stats <- function(dat,
     mutate(status = 1) %>%
     select(-id)
 
-  browser()
-
   dat <-
     rbind(controls, superagers) %>%
     as.data.frame() %>%

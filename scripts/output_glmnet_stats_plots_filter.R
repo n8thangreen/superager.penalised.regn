@@ -1,7 +1,7 @@
 
-# using the results of the elastic net
-# model fits using caret package
-# model performance statistics
+# using the results of glmnet
+# model fits
+# model performance statistics and plots
 
 
 library(caret)
@@ -15,8 +15,8 @@ library(glue)
 # read in data #
 ################
 
-res_3T <- readRDS("data/final/elasticnet_res_3T.RDS")
-res_7T <- readRDS("data/final/elasticnet_res_7T.RDS")
+res_3T <- readRDS("data/final/elasticnet_res_glmnet_3T.RDS")
+res_7T <- readRDS("data/final/elasticnet_res_glmnet_7T.RDS")
 
 dat_list_3T <- readRDS("data/dat_list_3T_n.RDS")
 dat_list_7T <- readRDS("data/dat_list_7T_n.RDS")
@@ -27,9 +27,9 @@ num_networks <- length(NETWORK_NAMES)
 out_tab <- read.csv(file = glue("data/elasticnet_out_glmnet_7T.csv"))
 
 
-##############
-# calc stats #
-##############
+#########
+# stats #
+#########
 
 stat_res <- list()
 
@@ -38,22 +38,26 @@ for (i in seq_len(num_networks)) {
   tab <- filter(out_tab, network == NETWORK_NAMES[i])
 
   stat_res[["3T"]][[i]] <-
-    fit_stats_filter(dat_list_3T[[i]],    # input data
-                     res_3T[[i]],         # glmnet output
-                     tab,                 # fitted coefficients
-                     single_coeff = TRUE)
+    fit_stats_filter(dat_list_3T[[i]],
+                     res_3T[[i]],
+                     tab,
+                     single_coeff = TRUE,
+                     glmnet = TRUE,
+                     s = 0.11)
 
   stat_res[["7T"]][[i]] <-
     fit_stats_filter(dat_list_7T[[i]],
                      res_7T[[i]],
                      tab,
-                     single_coeff = TRUE)
+                     single_coeff = TRUE,
+                     glmnet = TRUE,
+                     s = 0.11)
 }
 
 names(stat_res[["3T"]]) <- NETWORK_NAMES
 names(stat_res[["7T"]]) <- NETWORK_NAMES
 
-# save(stat_res, file = "data/predict_output_filter.RData")
+# save(stat_res, file = "data/predict_glmnet_output.RData")
 
 
 #########
@@ -71,12 +75,13 @@ par(mfrow = c(2,3),
 for (i in seq_len(num_networks)) {
 
   obs_status <- stat_res$`7T`[[i]]$obs_status
+  nobs <- length(obs_status)
 
   nm_regions <- names(stat_res$`7T`[[i]]$ppred)
   n_regions <- length(stat_res$`7T`[[i]]$ppred)
 
-  plot(obs_status + rnorm(n = 21, 0, 0.01),
-       stat_res$`7T`[[i]]$ppred[[1]][, "1"],
+  plot(obs_status + rnorm(n = nobs, 0, 0.01),
+       stat_res$`7T`[[i]]$ppred[[1]][, 1],
        ylim = c(0,1),
        xaxt = "n",
        main = names(stat_res$`7T`)[i],
@@ -85,17 +90,20 @@ for (i in seq_len(num_networks)) {
        cex.lab = 2, cex.axis = 2,
        cex.main = 2, cex.sub = 2, cex = 2)
 
+  abline(lm(stat_res$`7T`[[i]]$ppred[[1]][, 1] ~ obs_status))
+
   axis(1, at = c(1,2), labels = c("Control", "Superager"))
 
   legend("topleft", lty = 1, col = 1:n_regions, nm_regions, bty = "n")
 
   for (j in 2:n_regions) {
-    points(obs_status + rnorm(n = 21, 0, 0.01),
-           stat_res$`7T`[[i]]$ppred[[j]][, "1"],
+    points(obs_status + rnorm(n = nobs, 0, 0.01),
+           stat_res$`7T`[[i]]$ppred[[j]][, 1],
            col = j, cex = 2)
-    abline(lm(stat_res$`7T`[[i]]$ppred[[j]][, "1"] ~ obs_status), col = j)
 
-    print(lm(stat_res$`7T`[[i]]$ppred[[j]][, "1"] ~ obs_status), col = j)
+    abline(lm(stat_res$`7T`[[i]]$ppred[[j]][, 1] ~ obs_status), col = j)
+
+    print(lm(stat_res$`7T`[[i]]$ppred[[j]][, 1] ~ obs_status), col = j)
   }
 }
 # dev.off()
@@ -111,12 +119,13 @@ par(mfrow = c(2,3),
 for (i in seq_len(num_networks)) {
 
   obs_status <- stat_res$`3T`[[i]]$obs_status
+  nobs <- length(obs_status)
 
   nm_regions <- names(stat_res$`3T`[[i]]$ppred)
   n_regions <- length(stat_res$`3T`[[i]]$ppred)
 
-  plot(obs_status + rnorm(n = 31, 0, 0.01),
-       stat_res$`3T`[[i]]$ppred[[1]][, "1"],
+  plot(obs_status + rnorm(n = nobs, 0, 0.01),
+       stat_res$`3T`[[i]]$ppred[[1]][, 1],
        ylim = c(0,1),
        xaxt = "n",
        main = names(stat_res$`3T`)[i],
@@ -130,13 +139,13 @@ for (i in seq_len(num_networks)) {
   legend("topleft", lty = 1, col = 1:n_regions, nm_regions, bty = "n")
 
   for (j in 2:n_regions) {
-    points(obs_status + rnorm(n = 21, 0, 0.01),
-           stat_res$`3T`[[i]]$ppred[[j]][, "1"],
+    points(obs_status + rnorm(n = nobs, 0, 0.01),
+           stat_res$`3T`[[i]]$ppred[[j]][, 1],
            col = j, cex = 2)
 
-    abline(lm(stat_res$`3T`[[i]]$ppred[[j]][, "1"] ~ obs_status), col = j)
+    abline(lm(stat_res$`3T`[[i]]$ppred[[j]][, 1] ~ obs_status), col = j)
 
-    print(lm(stat_res$`3T`[[i]]$ppred[[j]][, "1"] ~ obs_status))
+    print(lm(stat_res$`3T`[[i]]$ppred[[j]][, 1] ~ obs_status))
   }
 }
 # dev.off()
@@ -170,5 +179,4 @@ ggplot(ggplot_dat,
   ylim(0, 1) +
   theme_minimal() +
   scale_x_continuous(breaks = c(1,2))
-
 
