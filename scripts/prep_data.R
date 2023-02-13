@@ -5,11 +5,26 @@
 # before main analysis
 
 
+# # overdrive folder
+# url <- "https://liveuclac-my.sharepoint.com/:f:/r/personal/sejjng1_ucl_ac_uk/Documents/superagers/raw_data?csf=1&web=1&e=7lJQNI"
+# dir <- here::here("raw_data")
+# download.file(url, destfile = dir)
+# ct_dat <- readr::read_csv(dir, ...)
+
+
+library(glue)
+library(dplyr)
+library(reshape2)
+library(tidyr)
+
+# select
+TENSOR <- "7T" # "3T"
+
 ct_dat <-
-  readRDS(here::here(glue("../../raw_data/190121/data/crt_{TENSOR}_zv.rds")))
+  readRDS(here::here(glue("raw_data/crt_{TENSOR}_zv.rds")))
 
 sa_dat <-
-  readRDS(here::here(glue("../../raw_data/190121/data/sa_{TENSOR}_zv.rds")))
+  readRDS(here::here(glue("raw_data/sa_{TENSOR}_zv.rds")))
 
 # remove columns
 ct_dat <-
@@ -52,29 +67,31 @@ sa_long <-
          network = as.numeric(network) + 1,
          network = ifelse(is.na(network), 1, network))
 
+network_names <-
+  c('Auditory',
+    'DMN',
+    'ECN_L',
+    'ECN_R',
+    'Hippocampal',
+    'Language',
+    'Salience',
+    'Sensorimotor',
+    'Visual_lateral',
+    'Visual_medial',
+    'Visual_occipital')
+
 NETWORK_NAMES <-
-  data.frame(network = 1:11,
-             network_name =
-               c('Auditory',
-                 'DMN',
-                 'ECN_L',
-                 'ECN_R',
-                 'Hippocampal',
-                 'Language',
-                 'Salience',
-                 'Sensorimotor',
-                 'Visual_lateral',
-                 'Visual_medial',
-                 'Visual_occipital'))
+  data.frame(network = seq_along(network_names),
+             network_name = network_names)
 
 # network masks (subset of regions)
 list_nodes_network_male <-
-  readRDS("~/Jasmina UCL/superagers/raw_data/list_nodes_network_male.rds") %>%
+  readRDS("raw_data/list_nodes_network_male.rds") %>%
   setNames(NETWORK_NAMES$network_name)
 
 # region names lookup
 regions <-
-  readr::read_csv(here::here("../../raw_data/position.csv")) %>%
+  readr::read_csv(here::here("raw_data/position.csv")) %>%
   select(-x, -y, -z)
 
 save(regions, file = "data/regions.RData")
