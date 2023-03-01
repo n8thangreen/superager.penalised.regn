@@ -4,7 +4,7 @@
 #' Use (tidy) long data format as input.
 #'
 #' @param dat list of ct_long and sa_long dataframes
-#' @param lambda oneSE or best?
+#' @param best_lambda_method oneSE or best?
 #' @param lambda_seq Define lambdas in advance; vector
 #' @param alpha_seq The elasticnet mixing parameter, with \eqn{0≤\alpha≤1}. The penalty is defined as
 #'              \eqn{(1-α)/2||β||_2^2+α||β||_1}. \code{alpha=1} is the lasso penalty,
