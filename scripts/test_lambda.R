@@ -32,8 +32,8 @@ TENSOR <- "3T"
 # TENSOR <- "3T_quality"
 
 # source("scripts/prep_data.R")
-# dat_list <- readRDS(file = glue("data/dat_list_{TENSOR}_n.RDS"))
-dat_list <- readRDS(file = glue("data/dat_list_t1.RDS"))
+dat_list <- readRDS(file = glue("data/dat_list_{TENSOR}_n.RDS"))
+# dat_list_t1 <- readRDS(file = glue("data/dat_list_t1.RDS"))
 
 
 ############
@@ -52,6 +52,7 @@ for (j in keep_network) {
 
   for (i in seq_along(alpha_seq)) {
 
+    # elastic net superagers by network for each alpha
     res[[j]][["alpha"]][[as.character(alpha_seq[i])]] <-
       en_superagers_network(
         dat = dat_list[[j]],
