@@ -32,8 +32,8 @@ TENSOR <- "3T"
 # TENSOR <- "3T_quality"
 
 # source("scripts/prep_data.R")
-# dat_list <- readRDS(file = glue("data/dat_list_{TENSOR}_n.RDS"))
-dat_list <- readRDS(file = glue("data/dat_list_t1.RDS"))
+ dat_list <- readRDS(file = glue("data/dat_list_{TENSOR}_n.RDS"))
+# dat_list <- readRDS(file = glue("data/dat_list_t1.RDS"))
 
 
 ############
@@ -59,7 +59,7 @@ for (j in keep_network) {
         lambda_grid = lambda_grid,
         alpha = alpha_seq[i])
   }
-
+## Error when running this part
   res[[j]]$lambda <- purrr::map(res[[j]]$alpha, ~.$lambda.1se)
   res[[j]]$coef_vals <- purrr::map(res[[j]]$alpha, coef, s = "lambda.1se")
 
