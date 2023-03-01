@@ -10,7 +10,7 @@
 #'              \eqn{(1-α)/2||β||_2^2+α||β||_1}. \code{alpha=1} is the lasso penalty,
 #'              \code{alpha=0} the ridge penalty.
 #' @param pmax Limit the maximum number of variables ever to be non-zero
-#' @return the result of running \link{\code{train} or \link{\code{cv.glmnet}}
+#' @return the result of running \link{\code{train}}
 #'
 #' @import caret glmnet
 #' @export
